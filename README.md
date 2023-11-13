@@ -14,7 +14,7 @@ Once the data has been initialized/synced, processed and pre-parsed, we are able
 
 ## How to run the program and validate data
 
-1. Install the project
+### 1. Install the project
 
 If using python:
 `pip install -r requirements.txt`
@@ -22,15 +22,17 @@ If using python:
 If using python3:
 `pip3 install -r requirements.txt`
 
-2. Run command (expected runtime can be 45 seconds)
-   If using python:
-   `python main.py`
+### 2. Run command
+
+If using python:
+`python main.py`
 
 If using python3:
 `python3 main.py`
 
-3. Compare the output to Uma
-   The command will output the realized volatility as a csv in `data/volatility/` and the more recent volatility values will be logged in the console. For example, the following lines would be seen in the csv or as logs:
+### 3. Compare the output to Uma
+
+The command will output the realized volatility as a csv in `data/volatility/` and the more recent volatility values will be logged in the console. For example, the following lines would be seen in the csv or as logs:
 
 '2023-11-11,0.5239049563166113
 2023-11-12,0.523299513960162
