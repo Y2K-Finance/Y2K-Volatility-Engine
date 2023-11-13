@@ -39,3 +39,13 @@ The command will output the realized volatility as a csv in `data/volatility/` a
 2023-11-13,0.5293089575209878'
 
 This would be outlining the realized volatility values on November 11th, 12th, and 13th. If the value being requested is for the 13th, then the value of `0.5293089575209878` would be used to compared against the assertion on Uma.
+
+## How to configure the correct ticker
+
+The ticker is set to Ethereum (ETH) by default in this project. To configure the ticker, replace the TICKER values in: (1) `main.py`, and (2) `init_db.py`
+
+### Ticker list
+
+The active list of tickers and the value used for their input in `TICKER` are:
+
+Ethereum (ETH) - `'eth'`
