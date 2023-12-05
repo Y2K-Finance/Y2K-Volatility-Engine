@@ -1,4 +1,5 @@
 import threading
+from threading import Semaphore
 import queue
 from web3 import Web3
 import json
@@ -19,8 +20,10 @@ data_queue = queue.Queue()
 
 MAX_RETRIES = 3
 SAVE_INTERVAL = 100  # Save every 10,000 rounds
+MAX_THREADS = 8
 
-def worker(start, contract):
+
+def worker(start, contract, semaphore):
     """Thread worker function."""
     retries = 0
     while retries < MAX_RETRIES:
@@ -34,6 +37,8 @@ def worker(start, contract):
             if retries == MAX_RETRIES:
                 print(f"Failed to fetch data for round {start} after {MAX_RETRIES} retries.")
                 data_queue.put(None)  # Indicate failure for this round
+        finally:
+            semaphore.release()
 
 def get_last_saved_round(TICKER):
     """Get the last saved round from the CSV file."""
@@ -79,8 +84,11 @@ def get_historical_data(TICKER):
     data = []
     threads = []
     first_save = True  # Add this flag to track the first save
+    semaphore = Semaphore(MAX_THREADS)
+
     for i in tqdm(range(updates), desc="Fetching Data", ncols=100):
-        t = threading.Thread(target=worker, args=(start, contract))
+        semaphore.acquire()
+        t = threading.Thread(target=worker, args=(start, contract, semaphore))
         threads.append(t)
         t.start()
         start += 1
