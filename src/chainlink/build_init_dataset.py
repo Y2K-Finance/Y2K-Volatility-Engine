@@ -116,5 +116,5 @@ def get_historical_data(TICKER):
     print("Data fetching completed!")
 
 
-# if __name__ == "__main__":
-#     get_historical_data('usdt')
+if __name__ == "__main__":
+    get_historical_data('btc')

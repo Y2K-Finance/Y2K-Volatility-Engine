@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-plt.style.use('dark_background')  # dark mode
+plt.style.use('dark_background')  
 
 def plot_price(TICKER):
     ticker = TICKER.lower()
@@ -26,9 +26,7 @@ def plot_price(TICKER):
     plt.ylabel('Price')
     plt.grid(True)  # Optionally, add a grid for better readability
     
-    # Save the figure to a file
     fig.savefig(f'data/figures/{ticker}_price.png')
-
     plt.show()
 
 
@@ -73,7 +71,7 @@ def calculate_realized_volatility(TICKER, window_size=30):
     ax.plot(rolling_realized_volatility[window_size-1:], label='Realized Volatility')
     ax.plot(upper_band, label='Upper Bollinger Band', linestyle='--')
     ax.plot(lower_band, label='Lower Bollinger Band', linestyle='--')
-    ax.set_title('Historical Realized Volatility with Bollinger Bands')
+    ax.set_title(f'{ticker.upper()} Historical Realized Volatility with Bollinger Bands')
     ax.set_xlabel('Date')
     ax.set_ylabel('Realized Volatility')
     ax.legend()
