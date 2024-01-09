@@ -49,3 +49,4 @@ The ticker is set to Ethereum (ETH) by default in this project. To configure the
 The active list of tickers and the value used for their input in `TICKER` are:
 
 Ethereum (ETH) - `'eth'`
+Bitcoin (BTC) - `'btc'`
