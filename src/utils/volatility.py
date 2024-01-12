@@ -45,17 +45,12 @@ def calculate_realized_volatility(TICKER, window_size=30):
     
     # Calculate log returns on the downsampled data
     daily_df['log_return'] = np.log(daily_df['price'] / daily_df['price'].shift(1))
-    daily_df['squared_return'] = daily_df['log_return'] ** 2
     
-    # Calculate the rolling variance
-    rolling_variance = daily_df['squared_return'].rolling(window=window_size).mean()
     
     # Annualize the rolling variance
-    annualized_rolling_variance = rolling_variance * 365
     
     # Calculate the rolling realized volatility
-    rolling_realized_volatility = np.sqrt(annualized_rolling_variance)
-    print(rolling_realized_volatility)
+    rolling_realized_volatility = daily_df['log_return'].rolling(window=window_size).std(ddof=0) * np.sqrt(365)
     rolling_realized_volatility.to_csv(f'data/volatility/{ticker}_realized_volatility.csv')
     rolling_realized_volatility.to_json(f'data/volatility/{ticker}_realized_volatility.json')
     # Calculate Bollinger Bands for the realized volatility
