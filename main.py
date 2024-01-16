@@ -6,8 +6,8 @@ from src.utils.volatility import calculate_realized_volatility
 # SYNCHRONOUS DATA COLLECTION
 from src.chainlink.update_sync import sync_data_set, check_for_duplicates
 
-TICKER = 'btc'
-TIMESTAMP = 1705432916
+TICKER = 'eth'
+TIMESTAMP = 1705433606
 
 sync_data_set(TICKER)
 check_for_duplicates(TICKER)
