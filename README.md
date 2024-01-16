@@ -14,7 +14,9 @@ Once the data has been initialized/synced, processed and pre-parsed, we are able
 
 ## How to run the program and validate data
 
-### 1. Install the project
+### 1. Setup the project
+
+## Install dependencies
 
 If using python:
 `pip install -r requirements.txt`
@@ -22,7 +24,26 @@ If using python:
 If using python3:
 `pip3 install -r requirements.txt`
 
-### 2. Run command
+## Create .env file
+
+The script uses a RPC provider to fetch data on-chain, to ensure this works create a `.env` file and add the fields displayed in the `env.example` file.
+
+### 2. Running the script
+
+## How to configure the correct ticker and timestamp
+
+The ticker is set to Ethereum (ETH) by default in this project and the timestamp will be an arbitrary value.
+
+To configure the ticker, replace the TICKER value in `main.py`. To configure the timestamp, replace the TIMESTAMP value in `main.py` with the asserted timestamp from the Uma query.
+
+### Ticker list
+
+The active list of tickers and the value used for their inputs in `TICKER` are:
+
+Ethereum (ETH) - `'eth'`
+Bitcoin (BTC) - `'btc'`
+
+### Running the command
 
 If using python:
 `python main.py`
@@ -32,21 +53,23 @@ If using python3:
 
 ### 3. Compare the output to Uma
 
+### Checks
+
+The script will log a series of values to allow the asserter to ensure data is valid:
+
+- `Latest Round` - the most recent round Id from the oracle used
+- `UNIX timestamp` - the timestamp used to filter the data
+- `UTC timestamp` - the corresponding UTC timestamp to the UNIX
+- `FinalRow UTC timestamp` - the timestamp for the updatedAt field from the final row of data used
+
+To ensure the output is valid the asserter can check the latest round is the same as the latest round Id for the Chainlink oracle being queries (oracle addresses can be found in `config/oracles.json`). The UNIX timestamp should correspond with the value in the Uma assertion that was used to replace `TIMESTAMP` in `main.py`. The UTC timestamp and FinalRow UTC timestamp should be identical suggesting the correct filter has been applied to the data set using the `TIMESTAMP`.
+
+### Comparison
+
 The command will output the realized volatility as a csv in `data/volatility/` and the more recent volatility values will be logged in the console. For example, the following lines would be seen in the csv or as logs:
 
-'2023-11-11,0.5239049563166113
-2023-11-12,0.523299513960162
-2023-11-13,0.5293089575209878'
+'2024-01-13,0.59445218
+2024-01-14,0.59254052
+2024-01-15,0.59387754'
 
-This would be outlining the realized volatility values on November 11th, 12th, and 13th. If the value being requested is for the 13th, then the value of `0.5293089575209878` would be used to compared against the assertion on Uma.
-
-## How to configure the correct ticker
-
-The ticker is set to Ethereum (ETH) by default in this project. To configure the ticker, replace the TICKER values in: (1) `main.py`, and (2) `init_db.py`
-
-### Ticker list
-
-The active list of tickers and the value used for their input in `TICKER` are:
-
-Ethereum (ETH) - `'eth'`
-Bitcoin (BTC) - `'btc'`
+This would be outlining the realized volatility values on January 13th, 14th, and 15th. The value being requested will always be the last log as the timestamp should filter out all data that follow - the value of `0.59387754` would be compared against the assertion on Uma after being scaled by 10^18.
