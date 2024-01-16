@@ -7,8 +7,9 @@ from src.utils.volatility import calculate_realized_volatility
 from src.chainlink.update_sync import sync_data_set, check_for_duplicates
 
 TICKER = 'eth'
+TIMESTAMP = 1705417098
 
 sync_data_set(TICKER)
 check_for_duplicates(TICKER)
 csv_format(TICKER)
-calculate_realized_volatility(TICKER)
+calculate_realized_volatility(TICKER,TIMESTAMP)

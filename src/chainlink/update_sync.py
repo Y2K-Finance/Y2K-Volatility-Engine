@@ -84,6 +84,7 @@ def sync_data_set(TICKER):
     address = data[ticker]
     contract = web3.eth.contract(address=address, abi=abi)
     latestData = contract.functions.latestRoundData().call()
+    print(f'    * Latest Round = {latestData[2]}')
     startFrom = latestData[0] - ids
     data = []
     for i in tqdm(range(ids)):

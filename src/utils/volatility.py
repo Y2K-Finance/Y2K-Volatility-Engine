@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import datetime
 
 plt.style.use('dark_background')  
 
@@ -30,7 +31,7 @@ def plot_price(TICKER):
     plt.show()
 
 
-def calculate_realized_volatility(TICKER, window_size=30):
+def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30):
     ticker = TICKER.lower()
     file_path = f"data/oracles/{ticker}-formatted.csv"
     df = pd.read_csv(file_path)
@@ -38,6 +39,9 @@ def calculate_realized_volatility(TICKER, window_size=30):
     # Ensure data is sorted
     df['updatedAt'] = pd.to_datetime(df['updatedAt'])
     df = df.sort_values(by='updatedAt')
+    df = df[df['updatedAt'] <= datetime.datetime.utcfromtimestamp(TIMESTAMP)]
+    print(datetime.datetime.utcfromtimestamp(TIMESTAMP))
+    print(df)
     
     # Downsample to daily data
     df.set_index('updatedAt', inplace=True)
@@ -51,8 +55,11 @@ def calculate_realized_volatility(TICKER, window_size=30):
     
     # Calculate the rolling realized volatility
     rolling_realized_volatility = daily_df['log_return'].rolling(window=window_size).std(ddof=0) * np.sqrt(365)
+    rolling_realized_volatility = rolling_realized_volatility.round(8)
+    print(rolling_realized_volatility)    
     rolling_realized_volatility.to_csv(f'data/volatility/{ticker}_realized_volatility.csv')
     rolling_realized_volatility.to_json(f'data/volatility/{ticker}_realized_volatility.json')
+
     # Calculate Bollinger Bands for the realized volatility
     rolling_mean = rolling_realized_volatility.rolling(window=window_size).mean()
     rolling_std = rolling_realized_volatility.rolling(window=window_size).std()
