@@ -42,6 +42,10 @@ The active list of tickers and the value used for their inputs in `TICKER` are:
 
 Ethereum (ETH) - `'eth'`
 Bitcoin (BTC) - `'btc'`
+Arbitrum (ARB) - `'arb`
+Solana (SOL) - `'sol`
+GMX (GMX) - `'gmx`
+PENDLE (PENDLE) - `'pendle`
 
 ### Running the command
 
@@ -59,10 +63,9 @@ The script will log a series of values to allow the asserter to ensure data is v
 
 - `Latest Round` - the most recent round Id from the oracle used
 - `UNIX timestamp` - the timestamp used to filter the data
-- `UTC timestamp` - the corresponding UTC timestamp to the UNIX
-- `FinalRow UTC timestamp` - the timestamp for the updatedAt field from the final row of data used
+- `Filter is valid` - if UTC timestamp is >= FinalRow timestamp this will be true (meaning data has been filtered correctly)
 
-To ensure the output is valid the asserter can check the latest round is the same as the latest round Id for the Chainlink oracle being queries (oracle addresses can be found in `config/oracles.json`). The UNIX timestamp should correspond with the value in the Uma assertion that was used to replace `TIMESTAMP` in `main.py`. The UTC timestamp and FinalRow UTC timestamp should be identical suggesting the correct filter has been applied to the data set using the `TIMESTAMP`.
+To ensure the output is valid the asserter can check the latest round is the same as the latest round Id for the Chainlink oracle being queried (oracle addresses can be found in `config/oracles.json`). The UNIX timestamp should correspond with the value in the Uma assertion used to replace `TIMESTAMP` in `main.py` and `Filter is valid` should log 'true'. Finally, the value logged for RV value should be scaled by 10 ^ 18 and compared against the volatility price in the Uma query.
 
 ### Comparison
 
@@ -72,4 +75,4 @@ The command will output the realized volatility as a csv in `data/volatility/` a
 2024-01-14,0.59254052
 2024-01-15,0.59387754'
 
-This would be outlining the realized volatility values on January 13th, 14th, and 15th. The value being requested will always be the last log as the timestamp should filter out all data that follow - the value of `0.59387754` would be compared against the assertion on Uma after being scaled by 10^18.
+This would be outlining the realized volatility values on January 13th, 14th, and 15th. The value being requested will always be the last log as the timestamp should filter out all data that follows. The value of `0.59387754` would then be compared against the assertion on Uma after being scaled by 10^18.

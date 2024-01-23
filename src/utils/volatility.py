@@ -40,7 +40,12 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30):
     df['updatedAt'] = pd.to_datetime(df['updatedAt'])
     df = df.sort_values(by='updatedAt')
     df = df[df['updatedAt'] <= datetime.datetime.utcfromtimestamp(TIMESTAMP)]
-    print('Unix:', TIMESTAMP, '- UTC:', datetime.datetime.utcfromtimestamp(TIMESTAMP), '- FinalRow UTC:', df.iloc[-1]['updatedAt'])
+
+    # Printing info for validity
+    utcTimestamp = datetime.datetime.utcfromtimestamp(TIMESTAMP)
+    finalTimestamp = df.iloc[-1]['updatedAt'];
+    filterValid = utcTimestamp >= finalTimestamp
+    print('    * Unix:', TIMESTAMP,'- Filter is valid:', filterValid)
     
     # Downsample to daily data
     df.set_index('updatedAt', inplace=True)
@@ -55,6 +60,11 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30):
     rolling_realized_volatility = rolling_realized_volatility.round(8)
     rolling_realized_volatility.to_csv(f'data/volatility/{ticker}_realized_volatility.csv')
     rolling_realized_volatility.to_json(f'data/volatility/{ticker}_realized_volatility.json')
+
+        # Printing the value for the final field
+    vol_path = f"data/volatility/{ticker}_realized_volatility.csv"
+    volData = pd.read_csv(vol_path)
+    print('    * RV value:',volData.iloc[-1]['log_return'])
 
     # Calculate Bollinger Bands for the realized volatility
     rolling_mean = rolling_realized_volatility.rolling(window=window_size).mean()
@@ -82,6 +92,7 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30):
     fig.savefig(f'data/figures/{ticker}-realized_vol_with_bbands.png')
     
     plt.show()
+
 
 
 
