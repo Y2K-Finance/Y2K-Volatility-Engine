@@ -4,9 +4,11 @@ import pandas as pd
 from tqdm import tqdm
 import threading
 import queue
-f = open(f"config/rpc.json")
-rpc = json.load(f)
-rpc = rpc['arbitrum']
+# f = open(f"config/rpc.json")
+# rpc = json.load(f)
+# rpc = rpc['arbitrum']
+rpc = 'https://arbitrum.llamarpc.com'
+
 web3 = Web3(Web3.HTTPProvider(rpc))
 
 data_queue = queue.Queue()
