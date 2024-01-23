@@ -41,10 +41,15 @@ To configure the ticker, replace the TICKER value in `main.py`. To configure the
 The active list of tickers and the value used for their inputs in `TICKER` are:
 
 Ethereum (ETH) - `'eth'`
+
 Bitcoin (BTC) - `'btc'`
+
 Arbitrum (ARB) - `'arb`
+
 Solana (SOL) - `'sol`
+
 GMX (GMX) - `'gmx`
+
 PENDLE (PENDLE) - `'pendle`
 
 ### Running the command
@@ -64,8 +69,9 @@ The script will log a series of values to allow the asserter to ensure data is v
 - `Latest Round` - the most recent round Id from the oracle used
 - `UNIX timestamp` - the timestamp used to filter the data
 - `Filter is valid` - if UTC timestamp is >= FinalRow timestamp this will be true (meaning data has been filtered correctly)
+- `RV Value` - the realised volatility value for the asset and corresponding timestamp
 
-To ensure the output is valid the asserter can check the latest round is the same as the latest round Id for the Chainlink oracle being queried (oracle addresses can be found in `config/oracles.json`). The UNIX timestamp should correspond with the value in the Uma assertion used to replace `TIMESTAMP` in `main.py` and `Filter is valid` should log 'true'. Finally, the value logged for RV value should be scaled by 10 ^ 18 and compared against the volatility price in the Uma query.
+To ensure the output is valid the asserter can check the latest round is the same as the latest round Id for the Chainlink oracle being queried (oracle address used will be logged next to latest round). The UNIX timestamp should correspond with the value in the Uma assertion used to replace `TIMESTAMP` in `main.py` and `Filter is valid` should log 'true'. Finally, the value logged for RV value should be scaled by 10 ^ 18 and compared against the volatility price in the Uma query.
 
 ### Comparison
 
