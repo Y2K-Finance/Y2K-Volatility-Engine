@@ -2,5 +2,9 @@
   "eth": {
     "touchUp": "0x4D6f622d56206664f228DA0816E2B6d7e546D520",
     "touchDown": "0x4D6f622d56206664f228DA0816E2B6d7e546D520"
+  },
+  "btc": {
+    "touchUp": "0x4D6f622d56206664f228DA0816E2B6d7e546D520",
+    "touchDown": "0x4D6f622d56206664f228DA0816E2B6d7e546D520"
   }
 }

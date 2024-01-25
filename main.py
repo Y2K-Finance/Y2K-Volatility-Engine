@@ -9,14 +9,20 @@ from src.updatePriceFeed import updatePriceFeed
 import time
 
 # Define the ticker
-TICKER = 'eth'
+ACTIVE_TICKERS = ['btc', 'eth']
 
 # Get the current time in Unix
 currentTimestamp = int(time.time())
 TIMESTAMP = currentTimestamp
 
-sync_data_set(TICKER)
-check_for_duplicates(TICKER)
-csv_format(TICKER)
-realisedVolatility = calculate_realized_volatility(TICKER,TIMESTAMP)
-updatePriceFeed(int(realisedVolatility), TICKER, TIMESTAMP)
+def updateFeeds(ticker): 
+    sync_data_set(ticker)
+    check_for_duplicates(ticker)
+    csv_format(ticker)
+    realisedVolatility = calculate_realized_volatility(ticker,TIMESTAMP)
+    updatePriceFeed(int(realisedVolatility), ticker, TIMESTAMP)
+
+
+for TICKER in ACTIVE_TICKERS:
+    print('Checking', TICKER, 'price feed')
+    updateFeeds(TICKER)
