@@ -13,7 +13,7 @@ LAPSE_TIME = 86400;
 umaAbi = abi.umaAbi
 earthquakeAbi = abi.earthquakeAbi
 
-def fetchAnswer(ticker, timestamp) -> [float, float]:
+def fetchAnswer(ticker, timestamp) -> [float, float, str]:
     # Fetching the address for the feed in use
     f = open(f"config/umaFeeds.json")
     data = json.load(f)
@@ -26,7 +26,7 @@ def fetchAnswer(ticker, timestamp) -> [float, float]:
     lastPrice = lastAnswer[2]
     updateDue = (timestamp - lastUpdate) > LAPSE_TIME
 
-    return [lastPrice, updateDue]
+    return [lastPrice, updateDue, umaFeed]
 
 def fetchStrikes(currentRealisedVol, ticker) -> bool:
     # Fetching the strike prices
@@ -49,17 +49,23 @@ def fetchStrikes(currentRealisedVol, ticker) -> bool:
     downStrike = contract.functions.strike().call()
 
     # # Checking if the strike prices have been hit
-    knockoutOccured = currentRealisedVol > downStrike or currentRealisedVol < upStrike
+    knockoutOccured = currentRealisedVol < downStrike or currentRealisedVol > upStrike
     return knockoutOccured
 
 def updatePriceFeed(currentRealisedVol, ticker, timestamp): 
-    [lastPrice, updateDue] = fetchAnswer(ticker, timestamp)
+    [lastPrice, updateDue, umaFeed] = fetchAnswer(ticker, timestamp)
     knockoutOccured = fetchStrikes(currentRealisedVol, ticker)
 
     # # Comparing the answers
     print('    * Last price:', lastPrice, '| Update due:', updateDue, '| Knockout:', knockoutOccured)
     if(updateDue or knockoutOccured or currentRealisedVol > lastPrice * (1 + DEVIATION_THRESHOLD) or currentRealisedVol < lastPrice * (1 - DEVIATION_THRESHOLD)):
         print('Updating the price feed')
-    #     # tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).transact()
-    #     # web3.eth.waitForTransactionReceipt(tx)
 
+        # Rewriting to goerli for tests
+        rpc = os.getenv('GOERLI_RPC')
+        web3 = Web3(Web3.HTTPProvider(rpc))
+
+        # Sending update tx
+        contract = web3.eth.contract(address=umaFeed, abi=umaAbi)
+        # tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).transact()
+        # web3.eth.waitForTransactionReceipt(tx)
