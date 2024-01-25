@@ -6,23 +6,12 @@ from src.utils.volatility import calculate_realized_volatility
 # SYNCHRONOUS DATA COLLECTION
 from src.chainlink.update_sync import sync_data_set, check_for_duplicates
 from src.updatePriceFeed import updatePriceFeed
-import time
 
 # Define the ticker
-ACTIVE_TICKERS = ['btc', 'eth']
+TICKER = 'eth'
+TIMESTAMP = 1706210621
 
-# Get the current time in Unix
-currentTimestamp = int(time.time())
-TIMESTAMP = currentTimestamp
-
-def updateFeeds(ticker): 
-    sync_data_set(ticker)
-    check_for_duplicates(ticker)
-    csv_format(ticker)
-    realisedVolatility = calculate_realized_volatility(ticker,TIMESTAMP)
-    updatePriceFeed(int(realisedVolatility), ticker, TIMESTAMP)
-
-
-for TICKER in ACTIVE_TICKERS:
-    print('Checking', TICKER, 'price feed')
-    updateFeeds(TICKER)
+sync_data_set(TICKER)
+check_for_duplicates(TICKER)
+csv_format(TICKER)
+calculate_realized_volatility(TICKER,TIMESTAMP)
