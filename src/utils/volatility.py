@@ -31,7 +31,7 @@ def plot_price(TICKER):
     plt.show()
 
 
-def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30):
+def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30) -> float:
     ticker = TICKER.lower()
     file_path = f"data/oracles/{ticker}-formatted.csv"
     df = pd.read_csv(file_path)
@@ -64,7 +64,11 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30):
         # Printing the value for the final field
     vol_path = f"data/volatility/{ticker}_realized_volatility.csv"
     volData = pd.read_csv(vol_path)
-    print('    * RV value:',volData.iloc[-1]['log_return'])
+    rvValue = volData.iloc[-1]['log_return']
+    print('    * RV value:',rvValue)
+
+    # Scale rvValue by 10 ** 18
+    scaledRV = rvValue * 10 ** 18
 
     # Calculate Bollinger Bands for the realized volatility
     rolling_mean = rolling_realized_volatility.rolling(window=window_size).mean()
@@ -91,8 +95,8 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30):
     # Save the figure to a file
     fig.savefig(f'data/figures/{ticker}-realized_vol_with_bbands.png')
     
-    plt.show()
-
+    # plt.show()
+    return scaledRV
 
 
 

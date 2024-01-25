@@ -44,13 +44,13 @@ Ethereum (ETH) - `'eth'`
 
 Bitcoin (BTC) - `'btc'`
 
-Arbitrum (ARB) - `'arb`
+Arbitrum (ARB) - `'arb'`
 
-Solana (SOL) - `'sol`
+Solana (SOL) - `'sol'`
 
-GMX (GMX) - `'gmx`
+GMX (GMX) - `'gmx'`
 
-PENDLE (PENDLE) - `'pendle`
+PENDLE (PENDLE) - `'pendle'`
 
 ### Running the command
 
@@ -71,14 +71,18 @@ The script will log a series of values to allow the asserter to ensure data is v
 - `Filter is valid` - if UTC timestamp is >= FinalRow timestamp this will be true (meaning data has been filtered correctly)
 - `RV Value` - the realised volatility value for the asset and corresponding timestamp
 
-To ensure the output is valid the asserter can check the latest round is the same as the latest round Id for the Chainlink oracle being queried (oracle address used will be logged next to latest round). The UNIX timestamp should correspond with the value in the Uma assertion used to replace `TIMESTAMP` in `main.py` and `Filter is valid` should log 'true'. Finally, the value logged for RV value should be scaled by 10 ^ 18 and compared against the volatility price in the Uma query.
+To ensure the output is valid the asserter can check the latest round is the same as the latest round Id for the Chainlink oracle being queried (oracle address used will be logged next to latest round). The UNIX timestamp should correspond with the value in the Uma assertion used to replace `TIMESTAMP` in `main.py` and `Filter is valid` should log 'true'. Finally, the value logged for `RV value `should be scaled by `10 ^ 18` and compared against the `volatility price` in the Uma query.
 
 ### Comparison
 
-The command will output the realized volatility as a csv in `data/volatility/` and the more recent volatility values will be logged in the console. For example, the following lines would be seen in the csv or as logs:
+The command will output the realized volatility as a csv in `data/volatility/` and the RV value will be logged in the console.
 
+For example, the following lines would be seen in the csv:
 '2024-01-13,0.59445218
 2024-01-14,0.59254052
 2024-01-15,0.59387754'
 
-This would be outlining the realized volatility values on January 13th, 14th, and 15th. The value being requested will always be the last log as the timestamp should filter out all data that follows. The value of `0.59387754` would then be compared against the assertion on Uma after being scaled by 10^18.
+The following value would be logged for RV:
+`RV value: 0.59387754`
+
+The csv be outlining the realized volatility values on January 13th, 14th, and 15th. The value being requested will always be the last log as the timestamp should filter out all data that follows. The value of `0.59387754` logged would then be scaled up by 10^18 and compared against the volatility price assertion on Uma.

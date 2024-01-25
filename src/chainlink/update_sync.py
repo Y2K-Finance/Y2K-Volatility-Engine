@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-# rpc = os.getenv('ARBITRUM_RPC')
-rpc = 'https://arbitrum.llamarpc.com'
+rpc = os.getenv('ARBITRUM_RPC')
+# rpc = 'https://arbitrum.llamarpc.com'
 
 web3 = Web3(Web3.HTTPProvider(rpc))
 
@@ -73,7 +73,7 @@ def sync_round_ids(TICKER):
     address = data[ticker]
     contract = web3.eth.contract(address=address, abi=abi)
     latestData = contract.functions.latestRoundData().call()
-    latestData = latestData[0]
+    latestData = int(latestData[0])
     lastroundId = df['roundId'][df.index[-1]]
     return latestData - int(lastroundId)
 
