@@ -3,7 +3,6 @@ numpy
 tqdm
 matplotlib
 web3
-threading
 queue
 matplotlib
 python-dotenv
