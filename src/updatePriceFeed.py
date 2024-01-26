@@ -1,4 +1,5 @@
-from web3 import Web3
+from web3 import Web3, HTTPProvider
+from web3.middleware import geth_poa_middleware
 import json
 from dotenv import load_dotenv
 import os
@@ -79,8 +80,28 @@ def updatePriceFeed(currentRealisedVol, ticker, timestamp):
         # Rewriting to goerli for tests
         rpc = os.getenv('GOERLI_RPC')
         web3 = Web3(Web3.HTTPProvider(rpc))
+        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+
+        private_key = os.getenv("VALIDATOR_PRIVATE_KEY")
+        account = web3.eth.account.from_key(private_key)
+        nonce = web3.eth.get_transaction_count(account.address)
+
 
         # Sending update tx
         contract = web3.eth.contract(address=umaFeed, abi=umaAbi)
+        tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).build_transaction({
+            'from': account.address,
+            'nonce': nonce,
+            'gas': 21464,  # Set appropriate gas limit
+            'gasPrice': web3.to_wei('3', 'gwei')  # Set appropriate gas price
+        })
+
+        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
+
+        # Send the transaction
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+        print("Transaction sent with hash:", tx_hash.hex())
+
+
         # tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).transact()
         # web3.eth.waitForTransactionReceipt(tx)
