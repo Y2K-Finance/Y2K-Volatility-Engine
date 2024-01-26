@@ -101,7 +101,5 @@ def updatePriceFeed(currentRealisedVol, ticker, timestamp):
         # Send the transaction
         tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
         print("Transaction sent with hash:", tx_hash.hex())
-
-
         # tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).transact()
         # web3.eth.waitForTransactionReceipt(tx)
