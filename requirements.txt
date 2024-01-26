@@ -3,6 +3,5 @@ numpy
 tqdm
 matplotlib
 web3
-queue
 matplotlib
 python-dotenv
