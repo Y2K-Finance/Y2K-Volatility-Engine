@@ -9,7 +9,8 @@ from src.updatePriceFeed import updatePriceFeed
 import time
 
 # Define the ticker
-ACTIVE_TICKERS = ['btc', 'eth']
+# ACTIVE_TICKERS = ['btc', 'eth']
+ACTIVE_TICKERS = ['eth']
 
 # Get the current time in Unix OR use provided timestamp if assertion Uma query
 currentTimestamp = int(time.time())

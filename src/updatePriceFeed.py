@@ -82,44 +82,27 @@ def updatePriceFeed(currentRealisedVol, ticker, timestamp):
         web3 = Web3(Web3.HTTPProvider(rpc))
         web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
+        # Fetching the private key
         private_key = os.getenv("VALIDATOR_PRIVATE_KEY")
         account = web3.eth.account.from_key(private_key)
         nonce = web3.eth.get_transaction_count(account.address)
-
-
-        # Sending update tx
         contract = web3.eth.contract(address=umaFeed, abi=umaAbi)
-        # transaction = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).build_transaction({
-        #     'from': account.address,
-        #     'nonce': nonce,
-        # })
 
-        # # Automatically estimate gas limit for the transaction
-        # transaction['gas'] = web3.eth.estimate_gas(transaction)
-
-        # # Automatically fetch current gas price from the network
-        # transaction['gas_price'] = web3.eth.gas_price
-
-        # # Sign the transaction
-        # signed_tx = web3.eth.account.sign_transaction(transaction, private_key)
-
-        # # Send the transaction
-        # tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
-        # print("Transaction sent with hash:", tx_hash.hex())
-
-        tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).build_transaction({
+        # Building the transaction
+        gasPrice = web3.eth.gas_price
+        updateTx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).build_transaction({
             'from': account.address,
-            'nonce': nonce
-            # 'gas': 214604,  # Set appropriate gas limit
-            # 'gasPrice': web3.to_wei('15', 'gwei')  # Set appropriate gas price
+            'nonce': nonce,
+            'gasPrice': gasPrice,
+            'gas': 0,  # Set appropriate gas limit
         })
+        gas = web3.eth.estimate_gas(updateTx)
+        updateTx.update({'gas': gas})
+        print("Transaction built:", updateTx)
 
-        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
-
-        # Send the transaction
-        tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-        print("Transaction sent with hash:", tx_hash.hex())
-
-
-        tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).transact()
-        web3.eth.waitForTransactionReceipt(tx)
+        # Signing and sending transaction
+        signed_txn = web3.eth.account.sign_transaction(updateTx, private_key=private_key)
+        tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction) 
+        print("    * Transaction sent:", tx_hash.hex())
+        receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+        print("    * Transaction receipt mined:", receipt.transactionHash.hex())
