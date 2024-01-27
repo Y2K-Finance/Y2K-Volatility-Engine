@@ -29,6 +29,7 @@ def fetchAnswer(ticker, timestamp) -> [float, float, str]:
     # Fetching the last answer asserted
     contract = web3.eth.contract(address=umaFeed, abi=umaAbi)
     lastAnswer = contract.functions.globalAnswer().call()
+    activeAssertion = lastAnswer[0]
     lastUpdate = lastAnswer[1]
     lastPrice = lastAnswer[2]
     updateDue = (timestamp - lastUpdate) > LAPSE_TIME
@@ -37,7 +38,7 @@ def fetchAnswer(ticker, timestamp) -> [float, float, str]:
     data = contract.functions.assertionData().call()
     lastRequest = data[1]
 
-    return [lastPrice, updateDue, lastUpdate, lastRequest, umaFeed]
+    return [lastPrice, updateDue, lastUpdate, lastRequest, activeAssertion, umaFeed]
 
 def fetchStrikes(currentRealisedVol, ticker) -> bool:
     # Fetching the strike prices
@@ -62,21 +63,34 @@ def fetchStrikes(currentRealisedVol, ticker) -> bool:
     knockoutOccured = currentRealisedVol < downStrike or currentRealisedVol > upStrike
     return knockoutOccured
 
+def waitForCompletion(tx_hash):
+        mined = False
+
+        while not mined:
+            try:
+                web3.eth.get_transaction_receipt(tx_hash)
+                mined = True
+            except:
+                mined = False
+
 def updatePriceFeed(currentRealisedVol, ticker, timestamp): 
     # Fetching data
-    [lastPrice, updateDue, lastUpdate, lastRequest, umaFeed] = fetchAnswer(ticker, timestamp)
+    [lastPrice, updateDue, lastUpdate, lastRequest, activeAssertion, umaFeed] = fetchAnswer(ticker, timestamp)
     knockoutOccured = fetchStrikes(currentRealisedVol, ticker)
     print('    * Last price:', lastPrice, '| Update due:', updateDue, '| Knockout:', knockoutOccured, '| Last Request:', lastRequest)
 
+    # Checking there is not an active assertion
+    if(activeAssertion):
+        print('RETURNED: There is an active assertion')
+        return
+
     # Returning if the cooldown period has not passed
     if(timestamp - lastUpdate < COOLDOWN_TIME or timestamp - lastRequest < ASSERTION_LIVENESS):
-        print("Cooldown hasn't expired yet.")
+        print("RETURNED: Cooldown hasn't expired yet.")
         return
 
     # Checking and updating
     if(updateDue or knockoutOccured or currentRealisedVol > lastPrice * (1 + DEVIATION_THRESHOLD) or currentRealisedVol < lastPrice * (1 - DEVIATION_THRESHOLD)):
-        print('Updating the price feed')
-
         # Rewriting to goerli for tests
         rpc = os.getenv('GOERLI_RPC')
         web3 = Web3(Web3.HTTPProvider(rpc))
@@ -98,11 +112,13 @@ def updatePriceFeed(currentRealisedVol, ticker, timestamp):
         })
         gas = web3.eth.estimate_gas(updateTx)
         updateTx.update({'gas': gas})
-        print("Transaction built:", updateTx)
+        print("    * Updating price feed with tx:", updateTx)
 
         # Signing and sending transaction
         signed_txn = web3.eth.account.sign_transaction(updateTx, private_key=private_key)
         tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction) 
-        print("    * Transaction sent:", tx_hash.hex())
         receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-        print("    * Transaction receipt mined:", receipt.transactionHash.hex())
+        print("    * Transaction receipt:", receipt.transactionHash.hex())
+
+        # Waiting for transaction to be mined before continuing
+        waitForCompletion(tx_hash)

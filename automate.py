@@ -9,8 +9,7 @@ from src.updatePriceFeed import updatePriceFeed
 import time
 
 # Define the ticker
-# ACTIVE_TICKERS = ['btc', 'eth']
-ACTIVE_TICKERS = ['eth']
+ACTIVE_TICKERS = ['btc', 'eth']
 
 # Get the current time in Unix OR use provided timestamp if assertion Uma query
 currentTimestamp = int(time.time())
@@ -21,9 +20,8 @@ def updateFeeds(ticker):
     check_for_duplicates(ticker)
     csv_format(ticker)
     realisedVolatility = calculate_realized_volatility(ticker,TIMESTAMP)
-    updatePriceFeed(int(realisedVolatility), ticker, TIMESTAMP)
+    updatePriceFeed(realisedVolatility, ticker, TIMESTAMP)
 
 
 for TICKER in ACTIVE_TICKERS:
-    print('Checking', TICKER, 'price feed')
     updateFeeds(TICKER)

@@ -30,6 +30,22 @@ def plot_price(TICKER):
     fig.savefig(f'data/figures/{ticker}_price.png')
     plt.show()
 
+def fetchRounded(value) -> float:
+    # Convert the number to a string
+    number_str = str(value)
+
+    # Split the string at the decimal point
+    integer_part, decimal_part = number_str.split('.')
+
+    # Get the first 8 digits of the decimal part
+    decimal_part = decimal_part[:8]
+
+    # Combine the integer and the truncated decimal parts
+    truncated_number_str = integer_part + '.' + decimal_part
+
+    # Convert back to a float if needed
+    truncated_number = float(truncated_number_str)
+    return truncated_number
 
 def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30) -> float:
     ticker = TICKER.lower()
@@ -64,11 +80,27 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30) -> float:
         # Printing the value for the final field
     vol_path = f"data/volatility/{ticker}_realized_volatility.csv"
     volData = pd.read_csv(vol_path)
-    rvValue = volData.iloc[-1]['log_return']
+    rvValue = round(volData.iloc[-1]['log_return'],8)
     print('    * RV value:',rvValue)
+    
+    # Checking string length is valid # Example issue stamp: 1706392262
+    rvValue_str = str(rvValue)
+    if(len(rvValue_str) != 10):
+        if(len(rvValue_str) == 9):
+            rvValue_str = rvValue_str + '0'
+            print('    * RV is 9 characters - rewritten to 10 characters:', rvValue_str)
+        else: 
+            raise ValueError('    * RV value is not formatted correctly')
 
-    # Scale rvValue by 10 ** 18
-    scaledRV = rvValue * 10 ** 18
+    # Scale rvValue by 10 ** 18, convert, and check all characters beyond are zeroes
+    scaledRV_str = rvValue_str.replace('0.', '') + '0000000000'
+    scaledRV = int(scaledRV_str)
+    print('    * Scaled RV value:',int(scaledRV))
+
+    is_format_correct = all(char == '0' for char in scaledRV_str[8:])
+    if is_format_correct == False:
+        raise ValueError('    * RV value is not formatted correctly')
+
 
     # Calculate Bollinger Bands for the realized volatility
     rolling_mean = rolling_realized_volatility.rolling(window=window_size).mean()
