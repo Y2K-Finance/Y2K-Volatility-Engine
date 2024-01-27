@@ -109,9 +109,9 @@ def updatePriceFeed(currentRealisedVol, ticker, timestamp):
 
         tx = contract.functions.updateAssertionDataAndFetch(currentRealisedVol, timestamp).build_transaction({
             'from': account.address,
-            'nonce': nonce,
-            'gas': 214604,  # Set appropriate gas limit
-            'gasPrice': web3.to_wei('3', 'gwei')  # Set appropriate gas price
+            'nonce': nonce
+            # 'gas': 214604,  # Set appropriate gas limit
+            # 'gasPrice': web3.to_wei('15', 'gwei')  # Set appropriate gas price
         })
 
         signed_tx = web3.eth.account.sign_transaction(tx, private_key)
