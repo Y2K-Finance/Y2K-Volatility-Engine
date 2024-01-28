@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 rpc = os.getenv('ARBITRUM_RPC')
-# rpc = 'https://arbitrum.llamarpc.com'
+rpc = 'https://arbitrum-one.publicnode.com'
 
 web3 = Web3(Web3.HTTPProvider(rpc))
 
@@ -118,3 +118,5 @@ def check_for_duplicates(TICKER):
         print(f"Duplicates removed. Updated dataset saved for {ticker.upper()}.")
     else:
         print(f"No duplicates found for {ticker.upper()} dataset.")
+
+sync_data_set('cv-index')

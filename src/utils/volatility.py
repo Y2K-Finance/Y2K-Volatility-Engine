@@ -30,6 +30,8 @@ def plot_price(TICKER):
     fig.savefig(f'data/figures/{ticker}_price.png')
     plt.show()
 
+plot_price('SOL')
+
 def fetchRounded(value) -> float:
     # Convert the number to a string
     number_str = str(value)

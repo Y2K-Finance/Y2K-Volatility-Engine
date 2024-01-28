@@ -6,7 +6,7 @@ on:
     # pull_request:
     # branches: [ "main" ]
   schedule:
-    - cron: '5 0/12 * * *'
+    - cron: '0 */4 * * *'
 
 permissions:
   contents: write
@@ -57,6 +57,11 @@ jobs:
           timestamp=$(date -u)
           git commit -m "Latest data: ${timestamp}" || exit 0 # The exit 0 command will prevent the workflow from failing if there's nothing to commit
           git push
+
+      - name: Send failure notification
+        if: failure()
+        run: |
+          curl -X POST -H "Content-Type: application/json" -d '{"content": "An error occurred in the Y2K Volatility Engine Actions workflow"}' ${{ secrets.WEBHOOK_URL }}"
           
 
         # git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/Y2K-Finance/Y2K-Volatility-Engine.git
