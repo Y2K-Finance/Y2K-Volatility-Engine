@@ -8,7 +8,7 @@ plt.style.use('dark_background')
 
 def plot_price(TICKER):
     ticker = TICKER.lower()
-    df = pd.read_csv("data/oracles/ETH.csv", index_col=0)
+    df = pd.read_csv(F"data/oracles/{TICKER}.csv", index_col=0)
     df = df.reset_index(drop=True)
     df['price'] = df['price'].astype(float) / 10 ** 8
     df['startedAt'] = pd.to_datetime(df['startedAt'], unit='s')
@@ -30,7 +30,6 @@ def plot_price(TICKER):
     fig.savefig(f'data/figures/{ticker}_price.png')
     plt.show()
 
-plot_price('SOL')
 
 def fetchRounded(value) -> float:
     # Convert the number to a string

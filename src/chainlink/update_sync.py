@@ -119,4 +119,4 @@ def check_for_duplicates(TICKER):
     else:
         print(f"No duplicates found for {ticker.upper()} dataset.")
 
-sync_data_set('cv-index')
+# sync_data_set('cv-index')
