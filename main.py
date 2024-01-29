@@ -9,7 +9,7 @@ from src.updatePriceFeed import updatePriceFeed
 
 # Define the ticker
 TICKER = 'btc'
-TIMESTAMP = 1706392262
+TIMESTAMP = 1706480820
 
 sync_data_set(TICKER)
 check_for_duplicates(TICKER)

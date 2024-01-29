@@ -94,11 +94,11 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30) -> float:
             raise ValueError('    * RV value is not formatted correctly')
 
     # Scale rvValue by 10 ** 18, convert, and check all characters beyond are zeroes
-    scaledRV_str = rvValue_str.replace('0.', '') + '0000000000'
+    scaledRV_str = rvValue_str.replace('.', '') + '0000000000'
     scaledRV = int(scaledRV_str)
     print('    * Scaled RV value:',int(scaledRV))
 
-    is_format_correct = all(char == '0' for char in scaledRV_str[8:])
+    is_format_correct = all(char == '0' for char in scaledRV_str[9:])
     if is_format_correct == False:
         raise ValueError('    * RV value is not formatted correctly')
 
@@ -130,7 +130,4 @@ def calculate_realized_volatility(TICKER, TIMESTAMP, window_size=30) -> float:
     
     # plt.show()
     return scaledRV
-
-
-
 

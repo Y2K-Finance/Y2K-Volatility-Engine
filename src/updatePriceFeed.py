@@ -6,9 +6,9 @@ import os
 load_dotenv()
 import src.utils.abi as abi
 
-# TODO: Change from GOERLI to ARBITRUM RPC
-rpc = os.getenv('GOERLI_RPC')
+rpc = os.getenv('ARBITRUM_RPC')
 web3 = Web3(Web3.HTTPProvider(rpc))
+web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 # Constant variables
 DEVIATION_THRESHOLD = 0.05;
@@ -46,21 +46,17 @@ def fetchStrikes(currentRealisedVol, ticker) -> bool:
     data = json.load(f)
     earthquakeAddresses = data[ticker]
 
-    # Configuring RPC as Goerli in use: TODO change in prod
-    rpc = os.getenv('ARBITRUM_RPC')
-    web3 = Web3(Web3.HTTPProvider(rpc))
-
     # Fetching the strikes
     upMarket = earthquakeAddresses['touchUp']
     contract = web3.eth.contract(address=upMarket, abi=earthquakeAbi)
     upStrike = contract.functions.strike().call()
     
-    downMarket = earthquakeAddresses['touchDown']
-    contract = web3.eth.contract(address=downMarket, abi=earthquakeAbi)
-    downStrike = contract.functions.strike().call()
+    # downMarket = earthquakeAddresses['touchDown']
+    # contract = web3.eth.contract(address=downMarket, abi=earthquakeAbi)
+    # downStrike = contract.functions.strike().call()
 
     # # Checking if the strike prices have been hit
-    knockoutOccured = currentRealisedVol < downStrike or currentRealisedVol > upStrike
+    knockoutOccured = currentRealisedVol > upStrike # or currentRealisedVol < downStrike
     return knockoutOccured
 
 def waitForCompletion(tx_hash):
@@ -91,11 +87,6 @@ def updatePriceFeed(currentRealisedVol, ticker, timestamp):
 
     # Checking and updating
     if(updateDue or knockoutOccured or currentRealisedVol > lastPrice * (1 + DEVIATION_THRESHOLD) or currentRealisedVol < lastPrice * (1 - DEVIATION_THRESHOLD)):
-        # Rewriting to goerli for tests
-        rpc = os.getenv('GOERLI_RPC')
-        web3 = Web3(Web3.HTTPProvider(rpc))
-        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-
         # Fetching the private key
         private_key = os.getenv("VALIDATOR_PRIVATE_KEY")
         account = web3.eth.account.from_key(private_key)

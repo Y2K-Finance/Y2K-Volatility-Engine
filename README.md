@@ -62,6 +62,9 @@ If using python3:
 
 ### 3. Compare the output to Uma
 
+To compare the asserted output run:
+`python3 main.py`
+
 ### Checks
 
 The script will log a series of values to allow the asserter to ensure data is valid:
