@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 rpc = os.getenv('ARBITRUM_RPC')
-rpc = 'https://arbitrum-one.publicnode.com'
+# rpc = 'https://arbitrum-one.publicnode.com'
 
 web3 = Web3(Web3.HTTPProvider(rpc))
 
