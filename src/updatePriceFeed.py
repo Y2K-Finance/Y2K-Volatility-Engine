@@ -4,7 +4,7 @@ import json
 from dotenv import load_dotenv
 import os
 load_dotenv()
-import src.utils.abi as abi
+import utils.abi as abi
 
 rpc = os.getenv('ARBITRUM_RPC')
 web3 = Web3(Web3.HTTPProvider(rpc))
